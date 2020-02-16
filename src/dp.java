@@ -1,7 +1,5 @@
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
+import java.util.LinkedList;
 
 public class dp {
 
@@ -454,6 +452,32 @@ dp[0][0]:什么都没有,所以为true
             dp[i] = Math.max(dp[i - 2] + nums[i - 1], dp[i - 1]);
         }
         return dp[n];
+    }
+
+
+    /**
+     * 416. 分割等和子集 0-1背包
+     */
+    public boolean canPartition(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return false;
+        }
+        int sum = 0;
+        for (int num : nums) {
+            sum += num;
+        }
+        if (sum % 2 != 0) {
+            return false;
+        }
+        sum = sum / 2;
+        boolean[] res = new boolean[sum + 1];
+        res[0] = true;
+        for (int num : nums) {
+            for (int i = sum; i >= num; i--) {
+                res[i] = res[i] || res[i - num];
+            }
+        }
+        return res[sum];
     }
 
 
