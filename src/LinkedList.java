@@ -47,6 +47,9 @@ public class LinkedList {
         return res.next;
     }
 
+
+
+
     /**
      * 链表逆序
      */

@@ -2,6 +2,37 @@ import java.util.*;
 import java.util.LinkedList;
 
 public class dp {
+    /*
+    最长公共子序列
+     */
+    public int longestCommonSubsequence(String A, String B) {
+        int row = A.length();
+        int col = B.length();
+        int[][] dp = new int[row + 1][col + 1];
+        for (int i = 0; i < row; i++) {
+            dp[i][0] = 0;
+        }
+        for (int i = 0; i < col; i++) {
+            dp[0][i] = 0;
+        }
+        for (int i = 1; i <= row; i++) {
+            for (int j = 1; j <= col; j++) {
+                if (A.charAt(i - 1) == B.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                } else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        return dp[row][col];
+    }
+
+
+    public static void main(String[] args) {
+        int i = new dp().longestCommonSubsequence("abcde", "ace");
+        System.out.println(i);
+    }
+
 
     public String longestPalindrome(String s) {
         if (s == null || s.length() < 2) {
@@ -124,6 +155,10 @@ public class dp {
         }
         return dp[row][col];
     }
+
+
+
+
     /*
     Leecode 44  https://leetcode-cn.com/problems/wildcard-matching/
     通配符匹配 dp[i][j]表示s到i位置,p到j位置是否匹配!
@@ -480,7 +515,62 @@ dp[0][0]:什么都没有,所以为true
         return res[sum];
     }
 
+    class Pair {
+        int fir, sec;
 
+        Pair(int fir, int sec) {
+            this.fir = fir;
+            this.sec = sec;
+        }
+    }
 
+    int stoneGame(int[] piles) {
+        int n = piles.length;
+        // 初始化 dp 数组
+        Pair[][] dp = new Pair[n][n];
+        for (int i = 0; i < n; i++)
+            for (int j = i; j < n; j++)
+                dp[i][j] = new Pair(0, 0);
+        // 填入 base case
+        for (int i = 0; i < n; i++) {
+            dp[i][i].fir = piles[i];
+            dp[i][i].sec = 0;
+        }
+        // 斜着遍历数组
+        for (int l = 2; l <= n; l++) {
+            for (int i = 0; i <= n - l; i++) {
+                int j = l + i - 1;
+                // 先手选择最左边或最右边的分数
+                int left = piles[i] + dp[i + 1][j].sec;
+                int right = piles[j] + dp[i][j - 1].sec;
+                // 套用状态转移方程
+                if (left > right) {
+                    dp[i][j].fir = left;
+                    dp[i][j].sec = dp[i + 1][j].fir;
+                } else {
+                    dp[i][j].fir = right;
+                    dp[i][j].sec = dp[i][j - 1].fir;
+                }
+            }
+        }
+        Pair res = dp[0][n - 1];
+        return res.fir - res.sec;
+    }
+
+    /*
+    凑零钱问题
+     */
+    public int coinChange(int[] coins, int amount) {
+        int[] dp = new int[amount + 1];
+        dp[0] = 0;
+        for (int i = 1; i < dp.length; i++) {
+            for (int coin : coins) {
+                if (coin <= i) {
+                    dp[i] = Math.min(dp[i], dp[i - coin] + 1);
+                }
+            }
+        }
+        return dp[amount] == (amount + 1) ? -1 : dp[amount];
+    }
 
 }
