@@ -133,4 +133,16 @@ public class BackTrack {
 
     }
 
+
+   /* public List<List<String>> partition(String s) {
+        List<String> res = new ArrayList<>();
+        backtrack_partition(res, s);
+        return res;
+    }
+
+    public void backtrack_partition(List<String> res, String s) {
+
+    }*/
+
+
 }

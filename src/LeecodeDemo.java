@@ -1032,6 +1032,32 @@ public class LeecodeDemo {
         return false;
     }
 
+    public void deleteNode(ListNode node) {
+        node.val = node.next.val;
+        node.next = node.next.next;
+    }
+
+
+    /*
+    从尾到头打印链表
+     */
+    public int[] reversePrint(ListNode head) {
+        Stack<ListNode> stack = new Stack<ListNode>();
+        ListNode temp = head;
+        while (temp != null) {
+            stack.push(temp);
+            temp = temp.next;
+        }
+        int size = stack.size();
+        int[] print = new int[size];
+        for (int i = 0; i < size; i++) {
+            print[i] = stack.pop().val;
+        }
+        return print;
+    }
+
+
+
     public void rotate(int[][] matrix) {
         int n = matrix.length;
         for (int i = 0; i < n / 2; i++)
@@ -1146,7 +1172,7 @@ public class LeecodeDemo {
                     tmp.append(res);
                 }
                 res = new StringBuilder(stack_res.removeFirst() + tmp);
-            } else if(c >= '0' && c <= '9') multi = multi * 10 + Integer.parseInt(c + "");
+            } else if (c >= '0' && c <= '9') multi = multi * 10 + Integer.parseInt(c + "");
             else res.append(c);
         }
         return res.toString();
@@ -1168,9 +1194,8 @@ public class LeecodeDemo {
     }
 
 
-
     public static void main(String[] args) {
-        new LeecodeDemo().topKFrequent(new int[]{1,1,1,2,2,3}, 2);
+        new LeecodeDemo().topKFrequent(new int[]{1, 1, 1, 2, 2, 3}, 2);
 
     }
 

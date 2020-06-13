@@ -48,8 +48,6 @@ public class LinkedList {
     }
 
 
-
-
     /**
      * 链表逆序
      */
@@ -68,6 +66,40 @@ public class LinkedList {
         return pre;
     }
 
+    public ListNode reverseKGroup(ListNode head, int k) {
+        if (head == null) {
+            return null;
+        }
+        ListNode point = head;
+        int i = k;
+        while (i - 1 > 0) {
+            point = point.next;
+            if (point == null) {
+                return head;
+            }
+            i--;
+        }
+        ListNode temp = point.next;
+        //将子链表断开
+        point.next = null;
+        ListNode new_head = reverseList(head);
+        head.next = reverseKGroup(temp, k);
+        return new_head;
+    }
+
+
+    public String print(ListNode head) {
+        StringBuilder sb = new StringBuilder();
+        while (head != null) {
+            sb.append(head.val);
+            head = head.next;
+        }
+        return sb.toString();
+    }
+
+
+
+
     /*
     递归
      */
@@ -81,6 +113,7 @@ public class LinkedList {
         head.next = null;
         return newHead;
     }
+
 
     public int[] productExceptSelf(int[] nums) {
         int[] res = new int[nums.length];
@@ -164,16 +197,14 @@ public class LinkedList {
         int low = 1;
         int high = nums.length;
         int mid = low + (high - low) / 2;
-        while(low < high)
-        {
+        while (low < high) {
             int count = 0;
             mid = low + (high - low) / 2;
-            for(int i=0;i<nums.length;i++)
-            {
-                if(nums[i] <= mid)
+            for (int i = 0; i < nums.length; i++) {
+                if (nums[i] <= mid)
                     count++;//1 2 3 3 4
             }
-            if(count > mid)
+            if (count > mid)
                 high = mid;
             else
                 low = mid + 1;
@@ -181,9 +212,25 @@ public class LinkedList {
         return low;
     }
 
-
-    public static void main(String[] args) {
-        new LinkedList().productExceptSelf(new int[]{1, 2, 3, 4});
+    /*
+    成环
+     */
+    public boolean hasCycle(ListNode head) {
+        ListNode fast = head;
+        ListNode slow = head;
+        while (fast != null) {
+            if (fast.next == null) {
+                return false;
+            }
+            slow = slow.next;
+            fast = fast.next.next;
+            if (slow == fast) {
+                return true;
+            }
+        }
+        return false;
     }
+
+
 
 }

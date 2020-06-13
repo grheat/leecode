@@ -1,11 +1,7 @@
-
-import javax.swing.*;
 import java.util.*;
 import java.util.LinkedList;
 
 public class Tree {
-
-
     public class TreeNode {
         int val;
         TreeNode left;
@@ -36,19 +32,32 @@ public class Tree {
 
     /*
     栈
+    1、申请一个栈stack，初始时令cur=head
+
+2、先把cur压入栈中，依次把左边界压入栈中，即不停的令cur=cur.left，重复步骤2
+
+3、不断重复2，直到为null，从stack中弹出一个节点，记为node，打印node的值，并令cur=node.right,重复步骤2
+
+4、当stack为空且cur为空时，整个过程停止。
      */
     public List<Integer> inorderTraversal1(TreeNode root) {
-        List<Integer> res = new ArrayList<>();
-        ArrayDeque<TreeNode> stack = new ArrayDeque();
+        List<Integer> ans = new ArrayList<>();
+        Stack<TreeNode> stack = new Stack<>();
         TreeNode cur = root;
-        while (cur != null && !stack.isEmpty()) {
-            stack.push(cur);
-            cur = cur.left;
+        while (cur != null || !stack.isEmpty()) {
+            //节点不为空一直压栈
+            while (cur != null) {
+                stack.push(cur);
+                cur = cur.left; //考虑左子树
+            }
+            //节点为空，就出栈
+            cur = stack.pop();
+            //当前值加入
+            ans.add(cur.val);
+            //考虑右子树
+            cur = cur.right;
         }
-        cur = stack.pop();
-        res.add(cur.val);
-        cur = cur.right;
-        return res;
+        return ans;
     }
 
     /**
@@ -91,6 +100,11 @@ public class Tree {
 
     /**
      * 前序遍历：非递归
+     * 1、申请一个栈stack，然后将头节点压入stack中。
+     * <p>
+     * 2、从stack中弹出栈顶节点，打印，再将其右孩子节点（不为空的话）先压入stack中，最后将其左孩子节点（不为空的话）压入stack中。
+     * <p>
+     * 3、不断重复步骤2，直到stack为空，全部过程结束。
      */
     public List<Integer> preorderTraversal2(TreeNode root) {
         List<Integer> res = new ArrayList<>();
@@ -112,6 +126,31 @@ public class Tree {
         return res;
     }
 
+    /**
+     * 后序遍历非递归
+     */
+    public List<Integer> postorderTraversal(TreeNode head) {
+        List<Integer> list = new ArrayList<Integer>();
+        Stack<TreeNode> stack1 = new Stack<TreeNode>();
+        Stack<TreeNode> stack2 = new Stack<TreeNode>();
+        if (head != null) {
+            stack1.push(head);
+            while (!stack1.empty()) {
+                head = stack1.pop();
+                stack2.push(head);
+                if (head.left != null) {
+                    stack1.push(head.left);
+                }
+                if (head.right != null) {
+                    stack1.push(head.right);
+                }
+            }
+            while (!stack2.empty()) {
+                list.add(stack2.pop().val);
+            }
+        }
+        return list;
+    }
 
     /**
      * No.95 不同的二叉搜索树 II : 递归
@@ -177,7 +216,6 @@ public class Tree {
     /**
      * 98. 验证二叉搜索树:递归
      */
-
     public boolean isValidBST(TreeNode root) {
         return helper(root, null, null);
     }
@@ -189,11 +227,9 @@ public class Tree {
         int val = node.val;
         if (lower != null && val <= lower) return false;
         if (upper != null && val >= upper) return false;
-
         return helper(node.right, val, upper) && helper(node.left, lower, val);
 
     }
-
     /**
      * 98. 验证二叉搜索树:DFS->树的中序遍历：递增
      */
@@ -237,7 +273,6 @@ public class Tree {
     /**
      * 101.对称二叉树:递归
      */
-
     public boolean isSymmetric(TreeNode root) {
         return isMirror(root, root);
     }
@@ -251,7 +286,6 @@ public class Tree {
     /**
      * 101.对称二叉树:递归:BFS(迭代)
      */
-
     public boolean isSymmetric1(TreeNode root) {
         Queue<TreeNode> queue = new LinkedList<>();
         queue.add(root);
@@ -273,7 +307,6 @@ public class Tree {
     /**
      * 102. 二叉树的层次遍历：递归
      */
-
     public List<List<Integer>> levelOrder(TreeNode root) {
         List<List<Integer>> res = new ArrayList<>();
         DFS(root, res, 0);
@@ -311,7 +344,35 @@ public class Tree {
                 res.get(level).add(node.val);
                 if (node.left != null) queue.add(node.left);
                 if (node.right != null) queue.add(node.right);
+            }
+            level++;
+        }
+        return res;
+    }
 
+    /*
+    No.103 二叉树的锯齿形层次遍历
+     */
+    public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
+        List<List<Integer>> res = new ArrayList<>();
+        if (root == null) {
+            return res;
+        }
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        int level = 0;
+        while (!queue.isEmpty()) {
+            res.add(new ArrayList<>());
+            int count = queue.size();
+            for (int i = 0; i < count; i++) {
+                TreeNode node = queue.remove();
+                if (level % 2 == 0)
+                    res.get(level).add(node.val);
+                else
+                    res.get(level).add(0, node.val);
+
+                if (node.left != null) queue.add(node.left);
+                if (node.right != null) queue.add(node.right);
             }
             level++;
         }
@@ -330,7 +391,6 @@ public class Tree {
         }
         return Math.max(maxDepth(root.left), maxDepth(root.right)) + 1;
     }
-
 
     public int maxDepth1(TreeNode root) {
         if (root == null) {
@@ -381,7 +441,9 @@ public class Tree {
         return root;
     }
 
-
+    /*
+    二叉树展开为链表
+     */
     public void flatten(TreeNode root) {
         while (root != null) {
             //左子树为 null，直接考虑下一个节点
@@ -653,11 +715,51 @@ public class Tree {
         return left != null ? left : right;
     }
 
+
+    /*
+    非递归
+     */
+    public TreeNode lowestCommonAncestor2(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null || root == p || root == q) {
+            return root;
+        }
+        List<TreeNode> pPath = findPath(root, p);
+        List<TreeNode> qPath = findPath(root, q);
+        TreeNode common = null;
+        for (int i = 0, j = 0; i < pPath.size() && j < qPath.size(); i++, j++) {
+            if (pPath.get(i) == qPath.get(j)) {
+                common = pPath.get(i);
+            }
+        }
+        return common;
+    }
+
+    private List<TreeNode> findPath(TreeNode root, TreeNode node) {
+        List<TreeNode> path = new ArrayList<>();
+        dfs(root, node, new ArrayList<>(), path);
+        return path;
+    }
+
+    private void dfs(TreeNode root, TreeNode node, List<TreeNode> tmp, List<TreeNode> path) {
+        if (root == null) {
+            return;
+        }
+        tmp.add(root);
+        if (root == node) {
+            path.addAll(new ArrayList<>(tmp));
+        }
+        dfs(root.left, node, tmp, path);
+        dfs(root.right, node, tmp, path);
+        tmp.remove(tmp.size() - 1);
+
+
+    }
+
+
     /**
      * leetcode297. 二叉树的序列化与反序列化
      */
     public class Codec {
-
         // Encodes a tree to a single string.
         public String serialize(TreeNode root) {
             if (root == null) {
@@ -691,7 +793,137 @@ public class Tree {
         }
     }
 
+    /*
+    t1是否包含t2的全部拓扑结构
+     */
+    public boolean contains(TreeNode t1, TreeNode t2) {
+        return check(t1, t2) || contains(t1.left, t2) || contains(t1.right, t2);
+    }
 
+    public boolean check(TreeNode t, TreeNode t2) {
+        if (t2 == null) return true;
+        if (t.val != t2.val) return false;
+        return check(t.left, t2.left) && check(t.right, t2.right);
+    }
+
+
+    /*
+    判断是否是平衡二叉树
+     */
+    public boolean res = true;
+
+    public boolean isBalance(TreeNode root) {
+        getHeight(root);
+        return res;
+    }
+
+    public int getHeight(TreeNode root) {
+        if (root == null) return 0;
+        int l = getHeight(root.left);
+        int r = getHeight(root.right);
+        if (Math.abs(l - r) > 1) {
+            res = false;
+        }
+        return Math.max(l, r) + 1;
+    }
+
+    /*
+    打家劫舍3
+     */
+    public int rob(TreeNode root) {
+        int[] res = dp(root);
+        return Math.max(res[0], res[1]);
+    }
+
+    public int[] dp(TreeNode root) {
+        if (root == null) {
+            return new int[]{0, 0};
+        }
+        int[] left = dp(root.left);
+        int[] right = dp(root.right);
+        int rob = root.val + left[0] + right[0];
+        int not_rob = Math.max(left[0], left[1]) + Math.max(right[0], right[1]);
+        return new int[]{not_rob, rob};
+    }
+
+    /*
+    No.112 路径总和
+     */
+    public boolean hasPathSum(TreeNode root, int sum) {
+        if (root == null)
+            return false;
+
+        sum -= root.val;
+        if ((root.left == null) && (root.right == null))
+            return (sum == 0);
+        return hasPathSum(root.left, sum) || hasPathSum(root.right, sum);
+    }
+
+    /*
+    No.113 路径总和2
+     */
+    public List<List<Integer>> pathSum(TreeNode root, int sum) {
+        List<List<Integer>> res = new ArrayList<>();
+        pathSumHelper(res, new ArrayList<>(), root, sum);
+        return res;
+    }
+
+    public void pathSumHelper(List<List<Integer>> result, List<Integer> curPath, TreeNode curNode, int sum) {
+        if (curNode == null) {
+            return;
+        }
+        curPath.add(curNode.val);
+        if (curNode.val == sum && curNode.left == null && curNode.right == null) {
+            result.add(new ArrayList<>(curPath));
+        } else {
+            pathSumHelper(result, curPath, curNode.left, sum - curNode.val);
+            pathSumHelper(result, curPath, curNode.right, sum - curNode.val);
+
+        }
+        curPath.remove(curPath.size() - 1);
+
+    }
+
+    /*
+    No.129 求根到叶子节点数字之和
+     */
+    public int sumNumbers(TreeNode root) {
+        return sumNumbersHelper(root, 0);
+    }
+
+    public int sumNumbersHelper(TreeNode root, int sum) {
+        if (root == null) {
+            return 0;
+        }
+        sum = sum * 10 + root.val;
+        if (root.left == null && root.right == null) {
+            return sum;
+        }
+        return sumNumbersHelper(root.left, sum) + sumNumbersHelper(root.right, sum);
+    }
+
+/*
+No.257 二叉树的所有路径
+ */
+    public List<String> binaryTreePaths(TreeNode root) {
+        List<String> res = new ArrayList<String>();
+        helper(res, "", root);
+        return res;
+    }
+
+    public void helper(List<String> res, String curPath, TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        curPath += root.val;
+        if (root.left == null && root.right == null) {
+            res.add(curPath);
+        } else {
+            curPath += "->";
+            helper(res, curPath, root.left);
+            helper(res, curPath, root.right);
+        }
+    }
 
 
     public static void main(String[] args) {

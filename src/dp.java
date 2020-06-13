@@ -27,11 +27,38 @@ public class dp {
         return dp[row][col];
     }
 
+    public String longestCommon(String A, String B) {
+        int row = A.length();
+        int col = B.length();
+        int[][] dp = new int[row][col];
 
-    public static void main(String[] args) {
-        int i = new dp().longestPalindromeSubseq("abxabyb");
-        System.out.println(i);
+        for (int i = 0; i < row; i++) {
+            dp[i][0] = A.charAt(i) == B.charAt(0) ? 1 : 0;
+        }
+        for (int i = 0; i < col; i++) {
+            dp[0][i] = A.charAt(0) == B.charAt(i) ? 1 : 0;
+        }
+        for (int i = 1; i < row; i++) {
+            for (int j = 1; j < col; j++) {
+                if (A.charAt(i) == B.charAt(j)) {
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                }
+            }
+        }
+        int max = 0;
+        int index = 0;
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                if (max < dp[i][j]) {
+                    max = dp[i][j];
+                    index = i;
+                }
+            }
+        }
+        return A.substring(index - max + 1, index + 1);
     }
+
+
 
     int longestPalindromeSubseq(String s) {
         int n = s.length();
@@ -49,7 +76,7 @@ public class dp {
                 }
             }
         }
-        return dp[0][n-1];
+        return dp[0][n - 1];
     }
 
     public String longestPalindrome(String s) {
@@ -421,6 +448,34 @@ dp[0][0]:什么都没有,所以为true
 
     }
 
+
+
+    public int minDistance(String word1, String word2, int ic, int dc, int rc) {
+        int m = word1.length();
+        int n = word2.length();
+        int[][] dp = new int[m + 1][n + 1];
+        dp[0][0] = 0;
+        for (int i = 1; i <= m; i++) {
+            dp[i][0] = i * dc;
+        }
+        for (int i = 1; i <= n; i++) {
+            dp[0][i] = i * ic;
+        }
+
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (word1.charAt(i - 1) == word2.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1];
+                } else {
+                    dp[i][j] = Math.min(Math.min(dp[i - 1][j - 1] + rc, dp[i][j - 1] + ic), dp[i - 1][j] + dc);
+                }
+            }
+        }
+        return dp[m][n];
+
+    }
+
+
     public int maxProfit(int[] prices) {
         int n = prices.length;
         int dp = 0;
@@ -487,7 +542,7 @@ dp[0][0]:什么都没有,所以为true
     }
 
     /*
-
+    打家劫舍:从第n个开始的最大数
      */
     public int rob(int[] nums) {
         int n = nums.length;
@@ -507,6 +562,32 @@ dp[0][0]:什么都没有,所以为true
         return dp[n];
     }
 
+/*
+优化
+ */
+
+    public int rob1(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        int n = nums.length;
+        int dp_i_1 = nums[0], dp_i_2 = 0;
+        int dp_i = dp_i_1;
+        for (int i = 2; i <= n; i++) {
+            dp_i = Math.max(dp_i_1, dp_i_2 + nums[i-1]);
+            dp_i_2 = dp_i_1;
+            dp_i_1 = dp_i;
+
+        }
+        return dp_i;
+    }
+
+
+
+    public static void main(String[] args) {
+        int i = new dp().rob1(new int[]{2,7,9,3,1});
+        System.out.println(i);
+    }
 
     /**
      * 416. 分割等和子集 0-1背包
@@ -581,6 +662,7 @@ dp[0][0]:什么都没有,所以为true
     public int coinChange(int[] coins, int amount) {
         int[] dp = new int[amount + 1];
         dp[0] = 0;
+        Arrays.fill(dp, amount + 1);
         for (int i = 1; i < dp.length; i++) {
             for (int coin : coins) {
                 if (coin <= i) {
@@ -591,4 +673,100 @@ dp[0][0]:什么都没有,所以为true
         return dp[amount] == (amount + 1) ? -1 : dp[amount];
     }
 
+    public int change(int[] coins, int amount) {
+        int[] dp = new int[amount + 1];
+        dp[0] = 1;
+        for (int coin : coins) {
+            for (int i = 1; i < dp.length; i++) {
+                {
+                    if (coin <= i) {
+                        dp[i] += dp[i - coin];
+                    }
+
+                }
+            }
+        }
+        return dp[amount];
+    }
+
+
+    /*
+    矩阵最小路径和
+     */
+    public int minPathSum3(int[][] m) {
+        if (m == null || m.length == 0 || m[0] == null || m[0].length == 0) {
+            return 0;
+        }
+        int row = m.length;
+        int col = m[0].length;
+        int[][] dp = new int[row][col];
+        dp[0][0] = m[0][0];
+        for (int i = 1; i < row; i++) {
+            dp[i][0] = dp[i - 1][0] + m[i][0];
+        }
+        for (int i = 0; i < col; i++) {
+            dp[0][i] = dp[0][i - 1] + m[0][i];
+        }
+        for (int i = 1; i < row; i++) {
+            for (int j = 1; j < col; j++) {
+                dp[i][j] = Math.max(dp[i - 1][j] + m[i][j], dp[i][j - 1] + m[i][j]);
+            }
+        }
+        return dp[row - 1][col - 1];
+    }
+
+
+
+    //maxprofit  k=1
+    public int maxProfit1(int[] prices) {
+        int n = prices.length;
+        // 持有 卖出
+        int dp_i_0 = 0, dp_i_1 = Integer.MIN_VALUE;
+        for (int i = 0; i < n; i++) {
+            dp_i_0 = Math.max(dp_i_0, dp_i_1 + prices[i]);
+            dp_i_1 = Math.max(dp_i_1, -prices[i]);
+        }
+        return dp_i_0;
+    }
+
+    //maxprofit k = +infinite
+    public int maxProfit2(int[] prices) {
+        int n = prices.length;
+        int dp_i_0 = 0, dp_i_1 = Integer.MIN_VALUE;
+        for (int i = 0; i < n; i++) {
+            int temp = dp_i_0;
+            dp_i_0 = Math.max(dp_i_0, dp_i_1 + prices[i]);
+            dp_i_1 = Math.max(dp_i_1, temp - prices[i]);
+        }
+        return dp_i_0;
+    }
+/*
+k = 2
+ */
+    public int maxProfit3(int[] prices, int k) {
+        int dp_i10 = 0, dp_i11 = Integer.MIN_VALUE;
+        int dp_i20 = 0, dp_i21 = Integer.MIN_VALUE;
+        for (int price : prices) {
+            dp_i20 = Math.max(dp_i20, dp_i21 + price);
+            dp_i21 = Math.max(dp_i21, dp_i10 - price);
+            dp_i10 = Math.max(dp_i10, dp_i11 + price);
+            dp_i11 = Math.max(dp_i11, -price);
+        }
+        return dp_i20;
+    }
+    /*
+    k = infinity cooldown
+     */
+    public int maxProfit4(int k, int[] prices) {
+        int n = prices.length;
+        int dp_i_0 = 0, dp_i_1 = Integer.MIN_VALUE;
+        int dp_pre_0 = 0;
+        for (int i = 0; i < n; i++) {
+            int temp = dp_i_0;
+            dp_i_0 = Math.max(dp_i_0, dp_i_1 + prices[i]);
+            dp_i_1 = Math.max(dp_i_1, dp_pre_0 - prices[i]);
+            dp_pre_0 = temp;
+        }
+        return dp_i_0;
+    }
 }
